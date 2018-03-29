@@ -13,6 +13,7 @@
     "case-sensitive-paths-webpack-plugin": "2.1.1",
     "chalk": "1.1.3",
     "css-loader": "0.28.7",
+    "delegate": "^3.2.0",
     "dotenv": "4.0.0",
     "dotenv-expand": "4.2.0",
     "eslint": "4.10.0",
@@ -92,5 +93,9 @@
   },
   "eslintConfig": {
     "extends": "react-app"
+  },
+  "devDependencies": {
+    "remote-redux-devtools": "^0.5.12",
+    "remotedev-server": "^0.2.4"
   }
 }

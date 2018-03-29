@@ -1,25 +1,12 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux'
-
 import './index.css';
+import delegate from 'delegate'
+import actions from './actions'
 
-import App from './App';
-import { createStore, compose, applyMiddleware } from 'redux'
-import reducer from './reducer'
+const worker = new Worker('/worker.js')
+const root = document.getElementById('root')
 
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
-
-const middlewares = [] // Add as and when needed.
-
-const store = createStore(
-  reducer,
-  composeEnhancers(applyMiddleware(...middlewares))
-)
-
-ReactDOM.render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
-  document.getElementById('root')
-);
+delegate(root, '[data-onclick]', 'click', function (e) {
+  const target = e.delegateTarget
+  const action = target.dataset.onclick
+  worker.postMessage(actions[action](e))
+})

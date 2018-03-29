@@ -3,8 +3,8 @@ export default {
     return {
       type: 'HEADER_BTN_CLICK',
       payload: {
-        task: e.currentTarget.dataset.task,
-        target: e.currentTarget.dataset.target
+        task: e.delegateTarget.dataset.task,
+        target: e.delegateTarget.dataset.target
       }
     }
   }
