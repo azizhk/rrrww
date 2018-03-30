@@ -1,13 +1,13 @@
 import React from 'react';
-import { connect } from 'react-redux'
+import logo from './logo.svg';
 
 function List ({data}) {
   return (
-    <div className="list">
+    <div className="list" data-key={data.id}>
       <h2 className="list-heading">{data.title}</h2>
       <ul className="list-ul">
         {data.items.map(item => 
-          <li className="list-li" key={item.id}>
+          <li className="list-li" key={item.id} data-key={item.id}>
             {item.text}
           </li>
         )}
@@ -16,10 +16,11 @@ function List ({data}) {
   )
 }
 
-function App ({lists}) {
+export default function App ({lists}) {
   return (
     <div className="App">
       <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
         <h1 className="App-title">Slow Trello</h1>
         <button data-onclick="HEADER_BTN_CLICK" className="header-btn" data-task="shuffle" data-target="cols">Shuffle Columns</button>
         <button data-onclick="HEADER_BTN_CLICK" className="header-btn" data-task="shuffle" data-target="rows">Shuffle Rows</button>
@@ -40,10 +41,9 @@ function App ({lists}) {
   );
 }
 
-function mapStateToProps (state) {
+export function mapStateToProps (state) {
   return {
     lists: state.lists
   }
 }
 
-export default connect(mapStateToProps)(App);

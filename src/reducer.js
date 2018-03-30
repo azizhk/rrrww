@@ -1,12 +1,18 @@
 import _ from 'underscore'
 const lorem = ['Lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit', 'Morbi', 'vel', 'arcu', 'vel', 'quam', 'malesuada', 'condimentum', 'nec', 'sed', 'velit', 'Cras', 'eget', 'neque', 'nunc', 'Donec', 'metus', 'diam', 'placerat', 'sed', 'mauris', 'ut', 'pulvinar', 'efficitur', 'leo', 'Donec', 'lacus', 'nisi', 'bibendum', 'eu', 'leo', 'ut', 'tincidunt', 'gravida', 'nibh', 'Fusce', 'accumsan', 'velit', 'sit', 'amet', 'lorem', 'placerat', 'luctus', 'Nunc', 'porta', 'eget', 'est', 'fringilla', 'tristique', 'Suspendisse', 'potenti', 'Sed', 'id', 'vestibulum', 'purus', 'Mauris', 'nunc', 'odio', 'ultrices', 'sit', 'amet', 'erat', 'non', 'congue', 'porttitor', 'leo']
 
+function randomRange (min, max) {
+  const value = min + Math.floor((max - min) * Math.random())
+  // return value
+  return Math.floor(value / 10) + 2
+}
+
 function generateSentence (wordCount) {
   return _.sample(lorem, wordCount).join(' ')
 }
 
 function generateItem (id) {
-  const wordCount = 10 + Math.floor(10 * Math.random())
+  const wordCount = randomRange(10, 20)
   return {
     id: id,
     text: generateSentence(wordCount)
@@ -14,21 +20,19 @@ function generateItem (id) {
 }
 
 function generateList (id) {
-  // Between 180 to 220
-  const itemCount = 180 + Math.floor(40 * Math.random())
+  const itemCount = randomRange(180, 220)
   const items = _
     .range(itemCount)
     .map(generateItem)
   return {
     id: id,
-    title: generateSentence(3 + Math.floor(2 * Math.random())),
+    title: generateSentence(randomRange(3, 5)),
     items: items
   }
 }
 
 function generateState () {
-  // Between 90 to 110
-  const listsCount = 90 + Math.floor(20 * Math.random())
+  const listsCount = randomRange(90, 110)
   const lists = _
     .range(listsCount)
     .map(generateList)

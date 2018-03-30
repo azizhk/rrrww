@@ -1,8 +1,8 @@
-import React from 'react';
-import { Provider } from 'react-redux'
+/* global self */
 import devToolsEnhancer from 'remote-redux-devtools';
+import render from './render'
 
-import App from './App';
+import App, {mapStateToProps} from './App';
 import { createStore } from 'redux'
 import reducer from './reducer'
 
@@ -13,8 +13,17 @@ const store = createStore(
   })
 )
 
-const dom = (
-  <Provider store={store}>
-    <App />
-  </Provider>
-);
+function _render () {
+  const props = mapStateToProps(store.getState())
+  return render(
+    App({...props})
+  )
+}
+
+_render()
+
+self.onmessage = (message) => { // eslint-disable-line
+  console.log(message)
+  store.dispatch(message.data)
+  _render()
+}
