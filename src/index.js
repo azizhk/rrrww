@@ -23,7 +23,7 @@ worker.onmessage = ({data}) => {
 
   if (!disped) {
     disped = true
-    // setTimeout(() => {
+    setTimeout(() => {
       worker.postMessage({
         type: 'HEADER_BTN_CLICK',
         payload: {
@@ -31,6 +31,6 @@ worker.onmessage = ({data}) => {
           target: 'both'
         }
       })
-    // }, 5000)
+    }, 5000)
   }
 }

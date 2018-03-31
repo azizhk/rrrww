@@ -2,9 +2,11 @@ import _ from 'underscore'
 
 const domMap = new Map()
 
-function payloadToDom (element) {
+function appendToDom (element, parent, before) {
   if (_.isString(element)) {
-    return document.createTextNode(element);
+    parent.textContent = element
+    return
+    // return document.createTextNode(element);
   }
   if (domMap.get(element.key)) {
     return domMap.get(element.key)
@@ -34,9 +36,25 @@ function payloadToDom (element) {
     }
   });
 
-  children.map((child) => {
-    return domElement.appendChild(payloadToDom(child))
-  })
+  if (children.length > 10) {
+    requestIdleCallback(() => {
+      children.map((child) => {
+        return appendToDom(child, domElement)
+        // return domElement.appendChild(payloadToDom(child))
+      })
+    })
+  } else {
+    children.map((child) => {
+      return appendToDom(child, domElement)
+      // return domElement.appendChild(payloadToDom(child))
+    })
+  }
+  
+  if (before) {
+    parent.insertBefore(domElement, before)
+  } else {
+    parent.appendChild(domElement)
+  }
 
   return domElement
 }
@@ -45,13 +63,14 @@ export default {
   appendChildToContainer (payload, root) {
     const child = JSON.parse(payload.child)
     console.log(child)
-    const dom = payloadToDom(child)
-    root.appendChild(dom)
+    appendToDom(child, root)
+    // root.appendChild(dom)
   },
   appendChild (payload) {
     const child = JSON.parse(payload.child)
     const parent = domMap.get(payload.parentKey)
-    parent.appendChild(payloadToDom(child))
+    appendToDom(child, parent)
+    // parent.appendChild(payloadToDom(child))
   },
   removeChild (payload) {
     const child = domMap.get(payload.childKey)
@@ -59,15 +78,13 @@ export default {
     parent.removeChild(child)
   },
   insertBefore (payload) {
-    let child
-    if (payload.childKey) {
-      child = domMap.get(payload.childKey)
-    } else {
-      child = payloadToDom(JSON.parse(payload.child))
-    }
     const parent = domMap.get(payload.parentKey)
     const before = domMap.get(payload.beforeKey)
-    parent.insertBefore(child, before)
+    if (payload.childKey) {
+      const child = domMap.get(payload.childKey)
+      parent.insertBefore(child, before)
+    } else {
+      appendToDom(JSON.parse(payload.child), parent, before)
+    }
   }
-  
 }
