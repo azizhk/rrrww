@@ -3,8 +3,6 @@
 import Reconciler from 'react-reconciler';
 import emptyObject from 'fbjs/lib/emptyObject';
 import createElement from './createElement'
-// import stringify from 'json-stringify-safe'
-import stringify from 'safe-json-stringify'
 import _ from 'underscore'
 
 function shallowDiff(oldObj, newObj) {
@@ -15,6 +13,16 @@ function shallowDiff(oldObj, newObj) {
   );
 
   return changedProps;
+}
+
+function markSent (element) {
+  if (!_.isString(element) && !element.sent) {
+    Object.defineProperty(element, 'sent', {
+      value: true
+    })
+    // TODO:Aziz Reduce Call Stack
+    element.children.forEach(markSent)
+  }
 }
 
 // let delay = 0
@@ -51,74 +59,86 @@ export default Reconciler({
     return inst;
   },
 
-  prepareForCommit() {
-    // noop
-    // debugger
-  },
+  prepareForCommit() {},
+  resetAfterCommit() {},
+  resetTextContent(wordElement) {},
 
-  prepareUpdate(wordElement, type, oldProps, newProps) {
+  prepareUpdate(domElement, type, oldProps, newProps) {
     return shallowDiff(oldProps, newProps)
   },
 
-  resetAfterCommit() {
-    // noop
-    // debugger
-    // delay = 0
-  },
-
-  resetTextContent(wordElement) {
-    // noop
-  },
-
   getRootHostContext(rootInstance) {
-    // You can use this 'rootInstance' to pass data from the roots.
+    return emptyObject;
   },
 
-  getChildHostContext() {
+  getChildHostContext(parentHostContext, type) {
     return emptyObject;
   },
 
   shouldSetTextContent(type, props) {
-    return false;
+    return false
   },
 
-  now: () => performance.now(),
-
-  shouldDeprioritizeSubtree (type, props) {
-    return false;
+  now: () => {
+    // noop
   },
 
-  scheduleDeferredCallback (cb) {
-    return setTimeout(() => {
-      cb(null)
-    }, 0)
-  },
+  useSyncScheduling: true,
 
-  cancelDeferredCallback (id) {
-    return clearTimeout(id)
-  },
+  // now: () => performance.now(),
+
+  // shouldDeprioritizeSubtree (type, props) {
+  //   return false;
+  // },
+
+  // scheduleDeferredCallback (cb) {
+  //   return setTimeout(() => {
+  //     cb(null)
+  //   }, 0)
+  // },
+
+  // cancelDeferredCallback (id) {
+  //   return clearTimeout(id)
+  // },
 
   mutation: {
     appendChild(parentInstance, child) {
-      // debugger
+      const identifier = child.sent
+        ? { childKey: child.key }
+        : { child: child }
+      // TODO:Aziz appendChild should not be O(n)
+      if (parentInstance.children.includes(child)) {
+        const index = parentInstance.children.indexOf(child)
+        parentInstance.children = [
+          ...parentInstance.children.slice(0, index),
+          ...parentInstance.children.slice(index + 1)
+        ]
+      }
       parentInstance.children.push(child)
+      markSent(child)
       sendMessage({
-        method: 'appendInitialChild',
+        method: 'appendChild',
         parentKey: parentInstance.key,
-        child: stringify(child)
+        ...identifier
       })
     },
 
     appendChildToContainer(parentInstance, child) {
       // debugger
+      markSent(child)
       sendMessage({
         method: 'appendChildToContainer',
-        child: stringify(child)
+        child: child
       })
     },
 
     removeChild(parentInstance, child) {
-      debugger
+      // TODO:Aziz removeChild should not be O(n)
+      const index = parentInstance.children.indexOf(child)
+      parentInstance.children = [
+        ...parentInstance.children.slice(0, index),
+        ...parentInstance.children.slice(index + 1)
+      ]
       sendMessage({
         method: 'removeChild',
         parentKey: parentInstance.key,
@@ -127,8 +147,8 @@ export default Reconciler({
     },
 
     removeChildFromContainer(parentInstance, child) {
-      debugger
-      throw new Error('not yet implemented')
+      // debugger
+      // throw new Error('not yet implemented')
       // sendMessage({
       //   method: 'removeChildFromContainer',
       //   parentInstance, child
@@ -136,13 +156,29 @@ export default Reconciler({
     },
 
     insertBefore(parentInstance, child, beforeChild) {
-      // TODO:Aziz Check if need to stringify entire child again which are already sent.
-      // debugger
+      const identifier = child.key
+        ? { childKey: child.key }
+        : { child: child }
+      // TODO:Aziz insertBefore should not be O(n)
+      if (parentInstance.children.includes(child)) {
+        const index = parentInstance.children.indexOf(child)
+        parentInstance.children = [
+          ...parentInstance.children.slice(0, index),
+          ...parentInstance.children.slice(index + 1)
+        ]
+        const beforeIndex = parentInstance.children.indexOf(beforeChild)
+        parentInstance.children = [
+          ...parentInstance.children.slice(0, beforeIndex),
+          child,
+          ...parentInstance.children.slice(beforeIndex)
+        ]
+      }
+      markSent(child)
       sendMessage({
         method: 'insertBefore',
         parentKey: parentInstance.key,
-        childKey: child.key,
-        beforeKey: beforeChild.key
+        beforeKey: beforeChild.key,
+        ...identifier
       })
     },
 

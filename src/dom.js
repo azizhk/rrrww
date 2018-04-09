@@ -61,15 +61,19 @@ function appendToDom (element, parent, before) {
 
 export default {
   appendChildToContainer (payload, root) {
-    const child = JSON.parse(payload.child)
+    const child = payload.child
     console.log(child)
     appendToDom(child, root)
     // root.appendChild(dom)
   },
   appendChild (payload) {
-    const child = JSON.parse(payload.child)
     const parent = domMap.get(payload.parentKey)
-    appendToDom(child, parent)
+    if (payload.childKey) {
+      const child = domMap.get(payload.childKey)
+      parent.appendChild(child)
+    } else {
+      appendToDom(payload.child, parent)
+    }
     // parent.appendChild(payloadToDom(child))
   },
   removeChild (payload) {
@@ -80,11 +84,14 @@ export default {
   insertBefore (payload) {
     const parent = domMap.get(payload.parentKey)
     const before = domMap.get(payload.beforeKey)
+    if (!parent) {
+      throw new Error('Parent not found')
+    }
     if (payload.childKey) {
       const child = domMap.get(payload.childKey)
       parent.insertBefore(child, before)
     } else {
-      appendToDom(JSON.parse(payload.child), parent, before)
+      appendToDom(payload.child, parent, before)
     }
   }
 }
