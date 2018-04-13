@@ -2,28 +2,9 @@
 /* eslint no-restricted-globals: 0 */
 import Reconciler from 'react-reconciler';
 import emptyObject from 'fbjs/lib/emptyObject';
-import createElement from './createElement'
+import WorkerElement from './WorkerElement'
+import changedProps from './utils/changedProps'
 import _ from 'underscore'
-
-function shallowDiff(oldObj, newObj) {
-  // Return a diff between the new and the old object
-  const uniqueProps = new Set([...Object.keys(oldObj), ...Object.keys(newObj)]);
-  const changedProps = Array.from(uniqueProps).filter(
-    propName => oldObj[propName] !== newObj[propName]
-  );
-
-  return changedProps;
-}
-
-function markSent (element) {
-  if (!_.isString(element) && !element.sent) {
-    Object.defineProperty(element, 'sent', {
-      value: true
-    })
-    // TODO:Aziz Reduce Call Stack
-    element.children.forEach(markSent)
-  }
-}
 
 // let delay = 0
 function sendMessage(payload) {
@@ -35,15 +16,16 @@ function sendMessage(payload) {
 
 export default Reconciler({
   appendInitialChild(parentInstance, child) {
-    parentInstance.children.push(child)
+    parentInstance.appendChild(child)
   },
 
   createInstance(type, props, rootContainerInstance, hostContext, internalInstanceHandle) {
-    return createElement(type, props, internalInstanceHandle.key);
+    return new WorkerElement(type);
   },
 
   createTextInstance(text, rootContainerInstance, internalInstanceHandle) {
-    return text;
+    return new WorkerElement('text');
+    // return text;
   },
 
   finalizeInitialChildren(element, type, props) {
@@ -64,7 +46,7 @@ export default Reconciler({
   resetTextContent(wordElement) {},
 
   prepareUpdate(domElement, type, oldProps, newProps) {
-    return shallowDiff(oldProps, newProps)
+    return changedProps(oldProps, newProps)
   },
 
   getRootHostContext(rootInstance) {
@@ -106,16 +88,8 @@ export default Reconciler({
       const identifier = child.sent
         ? { childKey: child.key }
         : { child: child }
-      // TODO:Aziz appendChild should not be O(n)
-      if (parentInstance.children.includes(child)) {
-        const index = parentInstance.children.indexOf(child)
-        parentInstance.children = [
-          ...parentInstance.children.slice(0, index),
-          ...parentInstance.children.slice(index + 1)
-        ]
-      }
-      parentInstance.children.push(child)
-      markSent(child)
+      parentInstance.appendChild(child)
+      child.markSent()
       sendMessage({
         method: 'appendChild',
         parentKey: parentInstance.key,
@@ -125,7 +99,7 @@ export default Reconciler({
 
     appendChildToContainer(parentInstance, child) {
       // debugger
-      markSent(child)
+      child.markSent()
       sendMessage({
         method: 'appendChildToContainer',
         child: child
@@ -134,11 +108,7 @@ export default Reconciler({
 
     removeChild(parentInstance, child) {
       // TODO:Aziz removeChild should not be O(n)
-      const index = parentInstance.children.indexOf(child)
-      parentInstance.children = [
-        ...parentInstance.children.slice(0, index),
-        ...parentInstance.children.slice(index + 1)
-      ]
+      parentInstance.removeChild(child)
       sendMessage({
         method: 'removeChild',
         parentKey: parentInstance.key,
@@ -159,21 +129,8 @@ export default Reconciler({
       const identifier = child.key
         ? { childKey: child.key }
         : { child: child }
-      // TODO:Aziz insertBefore should not be O(n)
-      if (parentInstance.children.includes(child)) {
-        const index = parentInstance.children.indexOf(child)
-        parentInstance.children = [
-          ...parentInstance.children.slice(0, index),
-          ...parentInstance.children.slice(index + 1)
-        ]
-        const beforeIndex = parentInstance.children.indexOf(beforeChild)
-        parentInstance.children = [
-          ...parentInstance.children.slice(0, beforeIndex),
-          child,
-          ...parentInstance.children.slice(beforeIndex)
-        ]
-      }
-      markSent(child)
+      parentInstance.appendBeforeChild(child, beforeChild)
+      child.markSent()
       sendMessage({
         method: 'insertBefore',
         parentKey: parentInstance.key,

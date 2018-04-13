@@ -36,20 +36,13 @@ function appendToDom (element, parent, before) {
     }
   });
 
-  if (children.length > 10) {
-    requestIdleCallback(() => {
-      children.map((child) => {
-        return appendToDom(child, domElement)
-        // return domElement.appendChild(payloadToDom(child))
-      })
-    })
-  } else {
-    children.map((child) => {
+  requestIdleCallback(() => {
+    children.forEach((child) => {
       return appendToDom(child, domElement)
       // return domElement.appendChild(payloadToDom(child))
     })
-  }
-  
+  })
+
   if (before) {
     parent.insertBefore(domElement, before)
   } else {
