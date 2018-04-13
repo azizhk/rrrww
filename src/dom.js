@@ -1,21 +1,22 @@
-import _ from 'underscore'
-
 const domMap = new Map()
 
 function appendToDom (element, parent, before) {
-  if (_.isString(element)) {
-    parent.textContent = element
-    return
-    // return document.createTextNode(element);
-  }
   if (domMap.get(element.key)) {
     return domMap.get(element.key)
   }
   const {type, props, children} = element
-  const domElement = document.createElement(type)
+  let domElement
+  if (type === 'text') {
+    domElement = document.createTextNode(element.text)
+  } else {
+    domElement = document.createElement(type)
+  }
   domMap.set(element.key, domElement)
+  Object.defineProperty(domElement, '__reactElement', {
+    value: element
+  })
   // Set the prop to the domElement
-  Object.keys(props).forEach(propName => {
+  props && Object.keys(props).forEach(propName => {
     const propValue = props[propName];
 
     if (propName === 'style') {
@@ -36,12 +37,18 @@ function appendToDom (element, parent, before) {
     }
   });
 
-  requestIdleCallback(() => {
+  // TODO:Aziz follow order from firstKey to lastKey
+  if (children.size > 10) {
+    requestIdleCallback(() => {
+      children.forEach((child) => {
+        return appendToDom(child, domElement)
+      })
+    })
+  } else {
     children.forEach((child) => {
       return appendToDom(child, domElement)
-      // return domElement.appendChild(payloadToDom(child))
     })
-  })
+  }
 
   if (before) {
     parent.insertBefore(domElement, before)

@@ -24,7 +24,9 @@ export default Reconciler({
   },
 
   createTextInstance(text, rootContainerInstance, internalInstanceHandle) {
-    return new WorkerElement('text');
+    const element = new WorkerElement('text');
+    element.text = text;
+    return element;
     // return text;
   },
 
@@ -107,7 +109,6 @@ export default Reconciler({
     },
 
     removeChild(parentInstance, child) {
-      // TODO:Aziz removeChild should not be O(n)
       parentInstance.removeChild(child)
       sendMessage({
         method: 'removeChild',
