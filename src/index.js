@@ -9,28 +9,28 @@ const root = document.getElementById('root')
 delegate(root, '[data-onclick]', 'click', function (e) {
   const target = e.delegateTarget
   const action = target.dataset.onclick
-  debugger
   worker.postMessage(actions[action](e))
 })
 
-let disped = false
+const queue = []
+function processQueue (deadline) {
+  while (deadline.timeRemaining() && queue.length) {
+    const data = queue.shift()
+    const ret = dom[data.method] && dom[data.method](deadline, data, root)
+    if (ret) {
+      queue.unshift(ret)
+      break // TODO:Aziz remove break
+    }
+  }
+  if (queue.length) {
+    requestIdleCallback(processQueue)
+  }
+}
+
 worker.onmessage = ({data}) => {
   // debugger
-  console.log(data)
-  requestIdleCallback(() => {
-    dom[data.method] && dom[data.method](data, root)
-  })
-
-  if (!disped) {
-    disped = true
-    setTimeout(() => {
-      worker.postMessage({
-        type: 'HEADER_BTN_CLICK',
-        payload: {
-          task: 'shuffle',
-          target: 'both'
-        }
-      })
-    }, 5000)
+  if (!queue.length) {
+    requestIdleCallback(processQueue)
   }
+  queue.push(data)
 }

@@ -3,8 +3,9 @@ const lorem = ['Lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipisc
 
 function randomRange (min, max) {
   const value = min + Math.floor((max - min) * Math.random())
-  // return value
-  return Math.floor(value / 10) + 2
+  return value
+  // return Math.floor(value / 5) + 2
+  // return 2
 }
 
 function generateSentence (wordCount) {

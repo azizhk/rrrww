@@ -2,7 +2,7 @@
 /* eslint no-restricted-globals: 0 */
 import Reconciler from 'react-reconciler';
 import emptyObject from 'fbjs/lib/emptyObject';
-import WorkerElement from './WorkerElement'
+import * as WorkerElement from './WorkerElement'
 import changedProps from './utils/changedProps'
 import _ from 'underscore'
 
@@ -15,19 +15,18 @@ function sendMessage(payload) {
 }
 
 export default Reconciler({
-  appendInitialChild(parentInstance, child) {
-    parentInstance.appendChild(child)
+  appendInitialChild(parent, child) {
+    WorkerElement.appendChild(parent, child)
   },
 
   createInstance(type, props, rootContainerInstance, hostContext, internalInstanceHandle) {
-    return new WorkerElement(type);
+    return WorkerElement.createElement(type);
   },
 
   createTextInstance(text, rootContainerInstance, internalInstanceHandle) {
-    const element = new WorkerElement('text');
+    const element = WorkerElement.createElement('text');
     element.text = text;
     return element;
-    // return text;
   },
 
   finalizeInitialChildren(element, type, props) {
@@ -48,7 +47,7 @@ export default Reconciler({
   resetTextContent(wordElement) {},
 
   prepareUpdate(domElement, type, oldProps, newProps) {
-    return changedProps(oldProps, newProps)
+    return changedProps(oldProps, newProps).filter(prop => prop !== 'children')
   },
 
   getRootHostContext(rootInstance) {
@@ -90,29 +89,28 @@ export default Reconciler({
       const identifier = child.sent
         ? { childKey: child.key }
         : { child: child }
-      parentInstance.appendChild(child)
-      child.markSent()
+      WorkerElement.appendChild(parentInstance, child)
       sendMessage({
-        method: 'appendChild',
+        method: child.sent ? 'appendExistingChild' : 'appendChild',
         parentKey: parentInstance.key,
         ...identifier
       })
+      WorkerElement.markSent(child)
     },
 
     appendChildToContainer(parentInstance, child) {
-      // debugger
-      child.markSent()
       sendMessage({
         method: 'appendChildToContainer',
         child: child
       })
+      WorkerElement.markSent(child)
     },
 
-    removeChild(parentInstance, child) {
-      parentInstance.removeChild(child)
+    removeChild(parent, child) {
+      WorkerElement.removeChild(parent, child)
       sendMessage({
         method: 'removeChild',
-        parentKey: parentInstance.key,
+        parentKey: parent.key,
         childKey: child.key
       })
     },
@@ -126,24 +124,22 @@ export default Reconciler({
       // })
     },
 
-    insertBefore(parentInstance, child, beforeChild) {
-      const identifier = child.key
+    insertBefore(parent, child, beforeChild) {
+      const identifier = child.sent
         ? { childKey: child.key }
         : { child: child }
-      parentInstance.appendBeforeChild(child, beforeChild)
-      child.markSent()
+      WorkerElement.insertBefore(parent, child, beforeChild)
       sendMessage({
-        method: 'insertBefore',
-        parentKey: parentInstance.key,
+        method: child.sent ? 'insertExistingBefore' : 'insertBefore',
+        parentKey: parent.key,
         beforeKey: beforeChild.key,
         ...identifier
       })
+      WorkerElement.markSent(child)
     },
 
     commitUpdate(instance, updatePayload, type, oldProps, newProps) {
-      updatePayload = updatePayload.filter(prop => prop !== 'children')
       if (updatePayload.length) {
-        debugger
         throw new Error('not yet implemented')
         // sendMessage({
         //   method: 'commitUpdate',
@@ -154,7 +150,6 @@ export default Reconciler({
 
     commitMount(instance, updatePayload, type, oldProps, newProps) {
       if (updatePayload.length) {
-        debugger
         throw new Error('not yet implemented')
         // sendMessage({
         //   method: 'commitMount',
@@ -164,7 +159,7 @@ export default Reconciler({
     },
 
     commitTextUpdate(textInstance, oldText, newText) {
-      debugger
+      throw new Error('not yet implemented')
     }
   }
 })
