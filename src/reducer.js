@@ -1,42 +1,43 @@
 import _ from 'underscore'
-const lorem = ['Lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit', 'Morbi', 'vel', 'arcu', 'vel', 'quam', 'malesuada', 'condimentum', 'nec', 'sed', 'velit', 'Cras', 'eget', 'neque', 'nunc', 'Donec', 'metus', 'diam', 'placerat', 'sed', 'mauris', 'ut', 'pulvinar', 'efficitur', 'leo', 'Donec', 'lacus', 'nisi', 'bibendum', 'eu', 'leo', 'ut', 'tincidunt', 'gravida', 'nibh', 'Fusce', 'accumsan', 'velit', 'sit', 'amet', 'lorem', 'placerat', 'luctus', 'Nunc', 'porta', 'eget', 'est', 'fringilla', 'tristique', 'Suspendisse', 'potenti', 'Sed', 'id', 'vestibulum', 'purus', 'Mauris', 'nunc', 'odio', 'ultrices', 'sit', 'amet', 'erat', 'non', 'congue', 'porttitor', 'leo']
+import leftPad from 'left-pad'
 
-function randomRange (min, max) {
-  const value = min + Math.floor((max - min) * Math.random())
-  return value
-  // return Math.floor(value / 5) + 2
-  // return 2
+function toColor (number) {
+  return leftPad(
+    Math.floor(number * 255).toString(16), 2, '0'
+  )
 }
 
-function generateSentence (wordCount) {
-  return _.sample(lorem, wordCount).join(' ')
-}
-
-function generateItem (id) {
-  const wordCount = randomRange(10, 20)
+function generateItem (val, red, green) {
   return {
-    id: id,
-    text: generateSentence(wordCount)
+    id: val,
+    text: val,
+    color: `#${toColor(red)}${toColor(green)}ff`
   }
 }
 
-function generateList (id) {
-  const itemCount = randomRange(180, 220)
-  const items = _
-    .range(itemCount)
-    .map(generateItem)
+function generateList (id, green) {
+  const itemCount = 150
+  const items = _.shuffle(
+      _.range(itemCount)
+    )
+    .map((val, index) => {
+      return generateItem(index, val/itemCount, green)
+    })
   return {
-    id: id,
-    title: generateSentence(randomRange(3, 5)),
+    id: toColor(green),
+    title: id,
     items: items
   }
 }
 
 function generateState () {
-  const listsCount = randomRange(90, 110)
-  const lists = _
-    .range(listsCount)
-    .map(generateList)
+  const listsCount = 200
+  const lists = _.shuffle(
+      _.range(listsCount)
+    )
+    .map((val, index) => {
+      return generateList(index, val/listsCount)
+    })
   return lists
 }
 
@@ -49,23 +50,23 @@ export default function reducer (state, action) {
     const {task, target} = action.payload;
     let lists = state.lists
     if (target === 'cols' || target === 'both') {
-      if (task === 'sort') {
+      if (task === 'text') {
         lists = _.sortBy(lists, 'title')
-      } else if (task === 'shuffle') {
-        lists = _.shuffle(lists)
+      } else if (task === 'color') {
+        lists = _.sortBy(lists, 'id')
       }
     }
 
     if (target === 'rows' || target === 'both') {
-      if (task === 'sort') {
+      if (task === 'text') {
         lists = lists.map(list => ({
           ...list,
           items: _.sortBy(list.items, 'text')
         }))
-      } else if (task === 'shuffle') {
+      } else if (task === 'color') {
         lists = lists.map(list => ({
           ...list,
-          items: _.shuffle(list.items)
+          items: _.sortBy(list.items, 'color')
         }))
       }
     }

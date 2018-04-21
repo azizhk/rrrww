@@ -140,7 +140,7 @@ export default Reconciler({
 
     commitUpdate(instance, updatePayload, type, oldProps, newProps) {
       if (updatePayload.length) {
-        throw new Error('not yet implemented')
+        // throw new Error('not yet implemented')
         // sendMessage({
         //   method: 'commitUpdate',
         //   instance, updatePayload, type, oldProps, newProps

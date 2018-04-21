@@ -1,4 +1,5 @@
 import * as WorkerElement from './WorkerElement'
+import setStyles from './utils/styles'
 
 const ROOT_KEY = 'root'
 
@@ -32,15 +33,12 @@ function createDOMElement (element) {
     const propValue = props[propName];
 
     if (propName === 'style') {
-      // TODO:
-      // setStyles(domElement, propValue);
+      setStyles(domElement, propValue);
     } else if (propName === 'children') {
       // Set the textContent only for literal string or number children, whereas
       // nodes will be appended in `appendChild`
       if (typeof propValue === 'string' || typeof propValue === 'number') {
         domElement.textContent = propValue;
-      } else {
-        
       }
     } else if (propName === 'className') {
       domElement.setAttribute('class', propValue);
