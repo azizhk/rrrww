@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "http://azizhk.github.io/rrrww",
   "dependencies": {
+    "left-pad": "^1.3.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-redux": "^5.0.7",

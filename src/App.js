@@ -9,7 +9,7 @@ function List ({data}) {
       <h2 className="list-heading">{data.title}</h2>
       <ul className="list-ul">
         {data.items.map(item => 
-          <li className="list-li" key={item.id}>
+          <li className="list-li" key={item.id} style={{background:item.color}}>
             {item.text}
           </li>
         )}
@@ -22,13 +22,13 @@ function App ({lists, HEADER_BTN_CLICK}) {
   return (
     <div className="App">
       <header className="App-header">
-        <h1 className="App-title">Slow Trello</h1>
-        <button onClick={HEADER_BTN_CLICK} className="header-btn" data-task="shuffle" data-target="cols">Shuffle Columns</button>
-        <button onClick={HEADER_BTN_CLICK} className="header-btn" data-task="shuffle" data-target="rows">Shuffle Rows</button>
-        <button onClick={HEADER_BTN_CLICK} className="header-btn" data-task="shuffle" data-target="both">Shuffle Both</button>
-        <button onClick={HEADER_BTN_CLICK} className="header-btn" data-task="sort" data-target="cols">Sort Columns</button>
-        <button onClick={HEADER_BTN_CLICK} className="header-btn" data-task="sort" data-target="rows">Sort Rows</button>
-        <button onClick={HEADER_BTN_CLICK} className="header-btn" data-task="sort" data-target="both">Sort Both</button>
+        <h1 className="App-title">Sync</h1>
+        <button onClick={HEADER_BTN_CLICK} className="header-btn" data-task="color" data-target="cols">Sort Cols Color</button>
+        <button onClick={HEADER_BTN_CLICK} className="header-btn" data-task="color" data-target="rows">Sort Rows Color</button>
+        <button onClick={HEADER_BTN_CLICK} className="header-btn" data-task="color" data-target="both">Sort Both Color</button>
+        <button onClick={HEADER_BTN_CLICK} className="header-btn" data-task="text" data-target="cols">Sort Cols Text</button>
+        <button onClick={HEADER_BTN_CLICK} className="header-btn" data-task="text" data-target="rows">Sort Rows Text</button>
+        <button onClick={HEADER_BTN_CLICK} className="header-btn" data-task="text" data-target="both">Sort Both Text</button>
       </header>
       <div className="lists">
         {lists && lists.map(data => 
