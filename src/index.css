@@ -8,6 +8,7 @@ body {
   background-color: #222;
   padding: 0 20px;
   color: white;
+  white-space: nowrap;
 }
 
 .App-logo {
@@ -28,10 +29,12 @@ body {
   font-size: 1.5em;
   margin-right: 40px;
   display: inline-block;
+  vertical-align: middle;
 }
 
 .header-btn {
   display: inline-block;
+  vertical-align: middle;
   margin: 10px;
   border: none;
   background: white;
