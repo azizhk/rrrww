@@ -14,6 +14,8 @@ body {
 .App-logo {
   animation: App-logo-spin infinite 20s linear;
   height: 60px;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 @keyframes App-logo-spin {
