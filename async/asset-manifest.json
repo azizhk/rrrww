@@ -1,9 +1,9 @@
 {
-  "bundle.css": "static/css/bundle.593b39dc.css",
-  "bundle.css.map": "static/css/bundle.593b39dc.css.map",
-  "bundle.js": "static/js/bundle.a724efcc.js",
-  "bundle.js.map": "static/js/bundle.a724efcc.js.map",
+  "bundle.css": "static/css/bundle.1e6c3d8f.css",
+  "bundle.css.map": "static/css/bundle.1e6c3d8f.css.map",
+  "bundle.js": "static/js/bundle.c3059a38.js",
+  "bundle.js.map": "static/js/bundle.c3059a38.js.map",
   "static/media/logo.svg": "static/media/logo.5d5d9eef.svg",
-  "worker.js": "static/js/worker.398ff789.js",
-  "worker.js.map": "static/js/worker.398ff789.js.map"
+  "worker.js": "static/js/worker.be57a95d.js",
+  "worker.js.map": "static/js/worker.be57a95d.js.map"
 }
