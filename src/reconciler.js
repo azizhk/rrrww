@@ -1,7 +1,7 @@
 /* global self */
 /* eslint no-restricted-globals: 0 */
-import Reconciler from 'react-reconciler';
-import emptyObject from 'fbjs/lib/emptyObject';
+import Reconciler from 'react-reconciler'
+import emptyObject from 'fbjs/lib/emptyObject'
 import * as WorkerElement from './WorkerElement'
 import changedProps from './utils/changedProps'
 import _ from 'underscore'
@@ -9,7 +9,7 @@ import _ from 'underscore'
 // let delay = 0
 let queue = []
 let timeoutId
-function sendMessage(payload) {
+function sendMessage (payload) {
   queue.push(payload)
   if (queue.length === 1) {
     timeoutId = setTimeout(processQueue, 0)
@@ -25,50 +25,50 @@ function processQueue () {
 }
 
 export default Reconciler({
-  appendInitialChild(parent, child) {
+  appendInitialChild (parent, child) {
     WorkerElement.appendChild(parent, child)
   },
 
-  createInstance(type, props, rootContainerInstance, hostContext, internalInstanceHandle) {
-    return WorkerElement.createElement(type);
+  createInstance (type, props, rootContainerInstance, hostContext, internalInstanceHandle) {
+    return WorkerElement.createElement(type)
   },
 
-  createTextInstance(text, rootContainerInstance, internalInstanceHandle) {
-    const element = WorkerElement.createElement('text');
-    element.text = text;
-    return element;
+  createTextInstance (text, rootContainerInstance, internalInstanceHandle) {
+    const element = WorkerElement.createElement('text')
+    element.text = text
+    return element
   },
 
-  finalizeInitialChildren(element, type, props) {
+  finalizeInitialChildren (element, type, props) {
     element.props = _.mapObject(props, (val, key) => {
       if (key !== 'children') {
         return val
       }
     })
-    return false;
+    return false
   },
 
-  getPublicInstance(inst) {
-    return inst;
+  getPublicInstance (inst) {
+    return inst
   },
 
-  prepareForCommit() {},
-  resetAfterCommit() {},
-  resetTextContent(wordElement) {},
+  prepareForCommit () {},
+  resetAfterCommit () {},
+  resetTextContent (wordElement) {},
 
-  prepareUpdate(domElement, type, oldProps, newProps) {
+  prepareUpdate (domElement, type, oldProps, newProps) {
     return changedProps(oldProps, newProps).filter(prop => prop !== 'children')
   },
 
-  getRootHostContext(rootInstance) {
-    return emptyObject;
+  getRootHostContext (rootInstance) {
+    return emptyObject
   },
 
-  getChildHostContext(parentHostContext, type) {
-    return emptyObject;
+  getChildHostContext (parentHostContext, type) {
+    return emptyObject
   },
 
-  shouldSetTextContent(type, props) {
+  shouldSetTextContent (type, props) {
     return false
   },
 
@@ -95,7 +95,7 @@ export default Reconciler({
   // },
 
   mutation: {
-    appendChild(parentInstance, child) {
+    appendChild (parentInstance, child) {
       const identifier = child.sent
         ? { childKey: child.key }
         : { child: child }
@@ -108,7 +108,7 @@ export default Reconciler({
       WorkerElement.markSent(child)
     },
 
-    appendChildToContainer(parentInstance, child) {
+    appendChildToContainer (parentInstance, child) {
       sendMessage({
         method: 'appendChildToContainer',
         child: child
@@ -116,7 +116,7 @@ export default Reconciler({
       WorkerElement.markSent(child)
     },
 
-    removeChild(parent, child) {
+    removeChild (parent, child) {
       WorkerElement.removeChild(parent, child)
       sendMessage({
         method: 'removeChild',
@@ -125,7 +125,7 @@ export default Reconciler({
       })
     },
 
-    removeChildFromContainer(parentInstance, child) {
+    removeChildFromContainer (parentInstance, child) {
       // debugger
       // throw new Error('not yet implemented')
       // sendMessage({
@@ -134,7 +134,7 @@ export default Reconciler({
       // })
     },
 
-    insertBefore(parent, child, beforeChild) {
+    insertBefore (parent, child, beforeChild) {
       const identifier = child.sent
         ? { childKey: child.key }
         : { child: child }
@@ -148,7 +148,7 @@ export default Reconciler({
       WorkerElement.markSent(child)
     },
 
-    commitUpdate(instance, updatePayload, type, oldProps, newProps) {
+    commitUpdate (instance, updatePayload, type, oldProps, newProps) {
       if (updatePayload.length) {
         // throw new Error('not yet implemented')
         // sendMessage({
@@ -158,7 +158,7 @@ export default Reconciler({
       }
     },
 
-    commitMount(instance, updatePayload, type, oldProps, newProps) {
+    commitMount (instance, updatePayload, type, oldProps, newProps) {
       if (updatePayload.length) {
         throw new Error('not yet implemented')
         // sendMessage({
@@ -168,9 +168,8 @@ export default Reconciler({
       }
     },
 
-    commitTextUpdate(textInstance, oldText, newText) {
+    commitTextUpdate (textInstance, oldText, newText) {
       throw new Error('not yet implemented')
     }
   }
 })
-

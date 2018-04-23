@@ -7,7 +7,7 @@ const ROOT_KEY = 'root'
 // as might be easier to switch to WeakMap to avoid detached node memory leak
 // But on low priority as detached node memory leaks are the easiest to fix
 const domMap = new Map()
-function getDOMFromKey (key) {  
+function getDOMFromKey (key) {
   return domMap.get(key)
 }
 function setDOMFromKey (key, domElement) {
@@ -30,46 +30,45 @@ function createDOMElement (element) {
     value: element
   })
   props && Object.keys(props).forEach(propName => {
-    const propValue = props[propName];
+    const propValue = props[propName]
 
     if (propName === 'style') {
-      setStyles(domElement, propValue);
+      setStyles(domElement, propValue)
     } else if (propName === 'children') {
       // Set the textContent only for literal string or number children, whereas
       // nodes will be appended in `appendChild`
       if (typeof propValue === 'string' || typeof propValue === 'number') {
-        domElement.textContent = propValue;
+        domElement.textContent = propValue
       }
     } else if (propName === 'className') {
-      domElement.setAttribute('class', propValue);
+      domElement.setAttribute('class', propValue)
     } else {
-      domElement.setAttribute(propName, propValue);
+      domElement.setAttribute(propName, propValue)
     }
-  });
+  })
 
   return domElement
 }
 
-export function traverseAndAppendChild (deadline, parentKey, child) {
+export function traverseAndAppendChild (deadline, parentDOM, child) {
   let firstTime = true
-  while(firstTime || deadline.timeRemaining()) {
+  let parent = parentDOM.__reactElement
+  while (firstTime || deadline.timeRemaining()) {
     firstTime = false
     const childDOM = createDOMElement(child)
-    const parentDOM = getDOMFromKey(parentKey)
-    let parent = parentDOM.__reactElement
-    
+
     parentDOM.appendChild(childDOM)
-    child.parentKey = parentKey
+    child.parentKey = parent.key
 
     if (child.firstKey) {
-      parentKey = child.key
+      parentDOM = childDOM
+      parent = child
       child = child.children.get(child.firstKey)
       continue
     }
 
     if (child.nextKey) {
-      const nextChild = parent.children.get(child.nextKey)
-      child = nextChild
+      child = parent.children.get(child.nextKey)
       continue
     }
 
@@ -84,22 +83,23 @@ export function traverseAndAppendChild (deadline, parentKey, child) {
       const nextChild = grandParent.children.get(parent.nextKey)
       if (!nextChild.parentKey) {
         child = nextChild
-        parentKey = grandParent.key
-        break;
+        parentDOM = grandParentDOM
+        parent = grandParent
+        break
       } else {
         parent = grandParent
       }
     }
 
     if (parent.parentKey === ROOT_KEY) {
-       break
+      break
     }
   }
 
   if (!child.parentKey) {
     return {
       method: 'traverseAndAppendChild',
-      parentKey,
+      parentDOM,
       child
     }
   }
@@ -114,7 +114,7 @@ export function appendChildToContainer (timeRemaining, root, app) {
   root.appendChild(appDOM)
 
   if (app.firstKey) {
-    return traverseAndAppendChild(timeRemaining, app.key, app.children.get(app.firstKey))
+    return traverseAndAppendChild(timeRemaining, appDOM, app.children.get(app.firstKey))
   }
   return null
 }
@@ -129,7 +129,7 @@ export function appendChild (timeRemaining, parentKey, child) {
   parentDOM.appendChild(childDOM)
 
   if (child.firstKey) {
-    return traverseAndAppendChild(timeRemaining, child.key, child.children.get(child.firstKey))
+    return traverseAndAppendChild(timeRemaining, childDOM, child.children.get(child.firstKey))
   }
   return null
 }
@@ -175,7 +175,7 @@ export function insertBefore (timeRemaining, parentKey, child, beforeKey) {
   parentDOM.insertBefore(childDOM, beforeDOM)
 
   if (child.firstKey) {
-    return traverseAndAppendChild(timeRemaining, child.key, child.children.get(child.firstKey))
+    return traverseAndAppendChild(timeRemaining, childDOM, child.children.get(child.firstKey))
   }
   return null
 }

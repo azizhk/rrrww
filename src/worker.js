@@ -1,8 +1,8 @@
 /* global self */
-import devToolsEnhancer from 'remote-redux-devtools';
+import devToolsEnhancer from 'remote-redux-devtools'
 import render from './render'
 
-import App, {mapStateToProps} from './App';
+import App, {mapStateToProps} from './App'
 import { createStore } from 'redux'
 import reducer from './reducer'
 

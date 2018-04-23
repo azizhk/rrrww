@@ -26,6 +26,6 @@ export default {
     return null
   },
   traverseAndAppendChild (deadline, payload) {
-    return ClientElement.traverseAndAppendChild(deadline, payload.parentKey, payload.child)
+    return ClientElement.traverseAndAppendChild(deadline, payload.parentDOM, payload.child)
   }
 }

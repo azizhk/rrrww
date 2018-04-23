@@ -1,4 +1,4 @@
-import './index.css';
+import './index.css'
 import delegate from 'delegate'
 import actions from './actions'
 import dom from './dom'
