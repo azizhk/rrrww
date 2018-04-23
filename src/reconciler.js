@@ -7,11 +7,21 @@ import changedProps from './utils/changedProps'
 import _ from 'underscore'
 
 // let delay = 0
+let queue = []
+let timeoutId
 function sendMessage(payload) {
-  setTimeout(() => {
-    self.postMessage(payload)
-  }, 0)
-  // delay += 1
+  queue.push(payload)
+  if (queue.length === 1) {
+    timeoutId = setTimeout(processQueue, 0)
+  } else if (queue.length === 50) { // TODO:Aziz Remove arbritrary number
+    processQueue()
+    clearTimeout(timeoutId)
+  }
+}
+
+function processQueue () {
+  self.postMessage(queue)
+  queue = []
 }
 
 export default Reconciler({

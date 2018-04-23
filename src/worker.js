@@ -23,7 +23,7 @@ function _render () {
 _render()
 
 self.onmessage = (message) => { // eslint-disable-line
-  console.log(message)
+  // console.log(message)
   store.dispatch(message.data)
   _render()
 }

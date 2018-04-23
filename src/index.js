@@ -12,7 +12,7 @@ delegate(root, '[data-onclick]', 'click', function (e) {
   worker.postMessage(actions[action](e))
 })
 
-const queue = []
+let queue = []
 function processQueue (deadline) {
   while (deadline.timeRemaining() && queue.length) {
     const data = queue.shift()
@@ -32,5 +32,5 @@ worker.onmessage = ({data}) => {
   if (!queue.length) {
     requestIdleCallback(processQueue)
   }
-  queue.push(data)
+  queue = queue.concat(data)
 }
