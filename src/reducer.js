@@ -1,6 +1,21 @@
 import _ from 'underscore'
 import leftPad from 'left-pad'
 
+function RNG (s) {
+  return function() {
+    s = Math.sin(s) * 10000; return s - Math.floor(s);
+  };
+};
+
+const rng = RNG(42);
+_.random = function(min, max) {
+  if (max == null) {
+    max = min;
+    min = 0;
+  }
+  return min + Math.floor(rng() * (max - min + 1));
+};
+
 function toColor (number) {
   return leftPad(
     Math.floor(number * 255).toString(16), 2, '0'

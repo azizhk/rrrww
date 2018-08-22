@@ -10,7 +10,7 @@
     "react-redux": "^5.0.7",
     "react-scripts": "1.1.1",
     "redux": "^3.7.2",
-    "underscore": "^1.8.3"
+    "underscore": "^1.9.1"
   },
   "scripts": {
     "start": "react-scripts start",

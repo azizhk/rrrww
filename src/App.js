@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import actions from './actions'
+import logo from './logo.svg';
 
 function List ({data}) {
   return (
@@ -22,7 +23,8 @@ function App ({lists, HEADER_BTN_CLICK}) {
   return (
     <div className="App">
       <header className="App-header">
-        <h1 className="App-title">Sync</h1>
+        <img src={logo} className="App-logo" alt="logo" />
+        <h1 className="App-title">React Sync</h1>
         <button onClick={HEADER_BTN_CLICK} className="header-btn" data-task="color" data-target="cols">Sort Cols Color</button>
         <button onClick={HEADER_BTN_CLICK} className="header-btn" data-task="color" data-target="rows">Sort Rows Color</button>
         <button onClick={HEADER_BTN_CLICK} className="header-btn" data-task="color" data-target="both">Sort Both Color</button>

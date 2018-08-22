@@ -11,6 +11,44 @@ body {
   white-space: nowrap;
 }
 
+.App-logo {
+  -webkit-animation: App-logo-spin infinite 20s linear;
+          animation: App-logo-spin infinite 20s linear;
+  height: 60px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+@-webkit-keyframes App-logo-spin {
+  from {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+    font-size: 0;
+    color: white;
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+    font-size: 1;
+    color: black;
+  }
+}
+
+@keyframes App-logo-spin {
+  from {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+    font-size: 0;
+    color: white;
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+    font-size: 1;
+    color: black;
+  }
+}
+
 .App-title {
   font-size: 1.5em;
   margin-right: 40px;
